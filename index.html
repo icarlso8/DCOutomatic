@@ -3,106 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DCOutomatic</title>
+  <title>Generador de Creatividades</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
-      background: #f9f9f9;
+      background: #f4f4f4;
     }
-
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-
-    input[type="text"], input[type="file"] {
+    input, button {
+      margin-bottom: 10px;
       display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 16px;
     }
-
-    button {
-      margin-right: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      color: white;
-      border-radius: 5px;
-    }
-
-    .generate {
-      background-color: #007bff;
-    }
-
-    .download {
-      background-color: #28a745;
-    }
-
     canvas {
-      display: block;
-      margin-top: 20px;
+      margin-top: 15px;
       border: 1px solid #ccc;
-      width: 100%;
-      max-width: 600px;
+      display: block;
     }
   </style>
 </head>
 <body>
-  <h1>🎨 DCOutomatic</h1>
+  <h1>🎨 Generador de Creatividades</h1>
 
-  <input type="file" id="imageUpload" accept="image/*" />
-  <input type="text" id="textInput" placeholder="Escribe tu titular aquí..." />
+  <label>Imagen 1: <input type="file" id="img1" accept="image/*"></label>
+  <label>Imagen 2: <input type="file" id="img2" accept="image/*"></label>
+  <label>Imagen 3: <input type="file" id="img3" accept="image/*"></label>
 
-  <button class="generate" onclick="drawCreative()">Generar</button>
-  <button class="download" onclick="downloadCreative()">Descargar</button>
+  <label>Título principal:
+    <input type="text" id="text1" placeholder="Título principal...">
+  </label>
+  <label>Subtítulo:
+    <input type="text" id="text2" placeholder="Subtítulo o CTA...">
+  </label>
 
-  <canvas id="creativeCanvas" width="600" height="400"></canvas>
+  <button onclick="generateCreatives()">Generar Creatividades</button>
+
+  <canvas id="canvas1" width="300" height="250"></canvas>
+  <button onclick="downloadCanvas('canvas1')">Descargar 300x250</button>
+
+  <canvas id="canvas2" width="160" height="600"></canvas>
+  <button onclick="downloadCanvas('canvas2')">Descargar 160x600</button>
 
   <script>
-    const canvas = document.getElementById('creativeCanvas');
-    const ctx = canvas.getContext('2d');
-    let baseImage = null;
+    const imgElements = [null, null, null];
 
-    document.getElementById('imageUpload').addEventListener('change', (e) => {
-      const file = e.target.files[0];
+    document.getElementById('img1').addEventListener('change', e => loadImage(e, 0));
+    document.getElementById('img2').addEventListener('change', e => loadImage(e, 1));
+    document.getElementById('img3').addEventListener('change', e => loadImage(e, 2));
+
+    function loadImage(event, index) {
+      const file = event.target.files[0];
       const reader = new FileReader();
-      reader.onload = function () {
-        baseImage = new Image();
-        baseImage.onload = () => drawCreative();
-        baseImage.src = reader.result;
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => imgElements[index] = img;
+        img.src = reader.result;
       };
       reader.readAsDataURL(file);
-    });
-
-    function drawCreative() {
-      const text = document.getElementById('textInput').value;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Fondo blanco
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Imagen base
-      if (baseImage) {
-        ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-      }
-
-      // Texto
-      ctx.fillStyle = '#000000';
-      ctx.font = 'bold 30px Arial';
-      ctx.fillText(text, 30, 50);
     }
 
-    function downloadCreative() {
+    function generateCreatives() {
+      const text1 = document.getElementById('text1').value;
+      const text2 = document.getElementById('text2').value;
+      drawCreative('canvas1', 300, 250, text1, text2);
+      drawCreative('canvas2', 160, 600, text1, text2);
+    }
+
+    function drawCreative(canvasId, width, height, text1, text2) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+
+      // Dibujar imágenes si están cargadas
+      if (imgElements[0]) ctx.drawImage(imgElements[0], 0, 0, width / 2, height / 3);
+      if (imgElements[1]) ctx.drawImage(imgElements[1], width / 2, 0, width / 2, height / 3);
+      if (imgElements[2]) ctx.drawImage(imgElements[2], width / 4, height / 3, width / 2, height / 3);
+
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText(text1, 10, height - 50);
+
+      ctx.font = '14px sans-serif';
+      ctx.fillText(text2, 10, height - 25);
+    }
+
+    function downloadCanvas(id) {
+      const canvas = document.getElementById(id);
       const link = document.createElement('a');
-      link.download = 'creatividad.png';
-      link.href = canvas.toDataURL('image/png');
+      link.download = `${id}.png`;
+      link.href = canvas.toDataURL();
       link.click();
     }
   </script>
