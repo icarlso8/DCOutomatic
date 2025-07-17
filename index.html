@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de Creatividades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      background: #f9f9f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    input[type="text"], input[type="file"] {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .generate {
+      background-color: #007bff;
+    }
+
+    .download {
+      background-color: #28a745;
+    }
+
+    canvas {
+      display: block;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      width: 100%;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Generador de Creatividades</h1>
+
+  <input type="file" id="imageUpload" accept="image/*" />
+  <input type="text" id="textInput" placeholder="Escribe tu titular aquí..." />
+
+  <button class="generate" onclick="drawCreative()">Generar</button>
+  <button class="download" onclick="downloadCreative()">Descargar</button>
+
+  <canvas id="creativeCanvas" width="600" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById('creativeCanvas');
+    const ctx = canvas.getContext('2d');
+    let baseImage = null;
+
+    document.getElementById('imageUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        baseImage = new Image();
+        baseImage.onload = () => drawCreative();
+        baseImage.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function drawCreative() {
+      const text = document.getElementById('textInput').value;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Fondo blanco
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Imagen base
+      if (baseImage) {
+        ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Texto
+      ctx.fillStyle = '#000000';
+      ctx.font = 'bold 30px Arial';
+      ctx.fillText(text, 30, 50);
+    }
+
+    function downloadCreative() {
+      const link = document.createElement('a');
+      link.download = 'creatividad.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
