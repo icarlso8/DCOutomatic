@@ -125,7 +125,7 @@
       const response = await fetch('https://api.replicate.com/v1/predictions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Token TU_TOKEN_DE_REPLICATE', // 🔁 reemplaza con tu token real
+          'Authorization': 'API TOKEN', // 🔁 reemplaza con tu token real
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -140,7 +140,7 @@
 
       while (!result || result.status !== 'succeeded') {
         const res = await fetch(endpoint, {
-          headers: { 'Authorization': 'r8_1mZlMDUEl41gamCLC3CyjtG9bqWlI7v0MtgQx' }
+          headers: { 'Authorization': 'API TOKEN' }
         });
         result = await res.json();
         if (result.status === 'succeeded') break;
